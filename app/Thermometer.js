@@ -209,7 +209,7 @@ function Thermometer(data) {
     <svg
       ref={ref}
       style={{
-        height: 500,
+        height: 250,
         width: "100%",
         marginRight: "0px",
         marginLeft: "0px",

@@ -2,6 +2,7 @@
 'use client'
 import React from "react";
 import Thermometer from './Thermometer';
+import GasTank from './GasTank';
 import { useState } from 'react';
 import io from 'socket.io-client'
 
@@ -36,8 +37,12 @@ export default function Home() {
   return (
     <div style={{paddingLeft:'50px'}}>
       <h2>Temperature</h2>
-      <div style={{paddingLeft:'50px', height:'500px', width:'100%'}}>
-        <Thermometer data={currentTemp} />
+      <div style={{paddingLeft:'50px', height:'250px', width:'100%'}}>
+        <table style={{ border: '3px solid black' }}>
+          <tr><td style={{paddingLeft:'20px', paddingTop:'20px'}}><Thermometer data={currentTemp}/></td>
+              <td><GasTank data={currentTemp}/></td> 
+          </tr>
+        </table>
       </div>
     </div>
   )
