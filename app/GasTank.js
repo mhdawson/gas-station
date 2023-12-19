@@ -1,29 +1,30 @@
 'use client'
 
 import React from "react";
-import * as d3 from 'd3';
 import { useD3 } from './useD3';
 
 function GasTank(data) {
   const ref = useD3(
     (svg) => {
-      var currentTemp = data.data
-      var defs = svg.append("defs");
-
       const okColor = "rgb(0,128,0)";
       const warningColor = "rgb(230,0,0)";
-   
-      svg.selectAll("svg > *").remove();
-
       const blackColor = "rgb(0,0,0)";
 
+      svg.selectAll("svg > *").remove();
+
       let currentColor = okColor;
-      let topOffset = 0;
+      let topLeftOffset = 0;
+      let topRightOffset = 0;
       const open = true;
-      if(open) {
+      if(data.data.Left || data.data.Right) {
         currentColor = warningColor;
-        topOffset = -10; 
       }
+
+      if (data.data.Left)
+        topLeftOffset = -10; 
+
+      if (data.data.Right)
+        topRightOffset = -10; 
 
       svg.append("rect")
         .attr("x", 37.5)
@@ -65,7 +66,7 @@ function GasTank(data) {
 
       svg.append("rect")
         .attr("x", 135)
-        .attr("y", 85 + topOffset)
+        .attr("y", 85 + topRightOffset)
         .attr("width",40) 
         .attr("height", 5)
         .style("shape-rendering", "crispEdges")
@@ -73,7 +74,7 @@ function GasTank(data) {
 
       svg.append("rect")
         .attr("x", 45)
-        .attr("y", 85)
+        .attr("y", 85 + topLeftOffset)
         .attr("width",40) 
         .attr("height", 5)
         .style("shape-rendering", "crispEdges")

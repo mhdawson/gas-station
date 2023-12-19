@@ -1,4 +1,3 @@
-
 'use client'
 import React from "react";
 import Thermometer from './Thermometer';
@@ -9,14 +8,10 @@ import io from 'socket.io-client'
 let defaultSet = false;
 let Socket
 
-
 export default function Home() {
-  const [currentTemp, setTemp] = useState(0);
-
-  if (defaultSet === false) {
-    defaultSet = true;
-    setTemp(15);
-  }
+  const [currentTemp, setTemp] = useState(10);
+  const [topLeft, setLeft] = useState(false);
+  const [topRight, setRight] = useState(false);
 
   React.useEffect(() => {
     // Create a socket connection
@@ -25,7 +20,13 @@ export default function Home() {
     // Listen for incoming messages
     socket.on('message', (message) => {
       if (message.temp)
-        setTemp(message.temp)
+        setTemp(message.temp);
+
+      if (message.topLeft !== undefined)
+        setLeft(message.topLeft);
+
+      if (message.topRight !== undefined)
+        setRight(message.topRight);
     });
 
     // Clean up the socket connection on unmount
@@ -35,13 +36,14 @@ export default function Home() {
   }, []);
 
   return (
-    <div style={{paddingLeft:'50px'}}>
-      <h2>Temperature</h2>
-      <div style={{paddingLeft:'50px', height:'250px', width:'100%'}}>
+    <div >
+      <div style={{ paddingLeft: '10px', paddingTop: '10px', height:'250px', width:'100%'}}>
         <table style={{ border: '3px solid black' }}>
-          <tr><td style={{paddingLeft:'20px', paddingTop:'20px'}}><Thermometer data={currentTemp}/></td>
-              <td><GasTank data={currentTemp}/></td> 
-          </tr>
+          <tbody>
+            <tr><td colSpan='2' style={{textAlign: 'center'}}>Gas Station Dashboard</td></tr>
+            <tr><td><Thermometer data={currentTemp}/></td>
+                <td><GasTank data={{Left: topLeft, Right: topRight}}/></td></tr>
+          </tbody>
         </table>
       </div>
     </div>
