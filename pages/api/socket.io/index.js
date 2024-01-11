@@ -43,7 +43,7 @@ function readGpio(pin, callback) {
     const pinValueString = stdout.replace(/\s+/g,'');
 
     let pinValue = false;
-    if (pinValueString === '1')
+    if (pinValueString === '0')
       pinValue = true;
 
     callback(pinValue);
