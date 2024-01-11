@@ -1,25 +1,35 @@
 import { Server } from 'socket.io';
 import { readFileSync, readdirSync } from 'node:fs';
 import { exec } from 'node:child_process';
+import mqtt from 'mqtt';
 
 const DEVICES_PREFIX = '/sys/bus/w1/devices/';
 const TOP_LEFT_PIN = 17;
 const TOP_RIGHT_PIN = 27;
 const POLL_INTERVAL = 3000;
+const MQTT_SERVER = 'mqtt:10.1.1.186:1883';
+const TEMP_TOPIC = 'gas_station/temp';
+const TOP_LEFT_TOPIC = 'gas_station/top_left';
+const TOP_RIGHT_TOPIC = 'gas_station/top_right';
 
 function getDeviceFile() {
   // currently assumes there is a single device
-  const entries = readdirSync(DEVICES_PREFIX)
-  for (let i = 0; i < entries.length; i++) {
-    if (entries[i].startsWith('28-')) {
-      return DEVICES_PREFIX + entries[i] + '/hwmon/hwmon1/temp1_input';
+  try {
+    const entries = readdirSync(DEVICES_PREFIX);
+    for (let i = 0; i < entries.length; i++) {
+      if (entries[i].startsWith('28-')) {
+        return DEVICES_PREFIX + entries[i] + '/hwmon/hwmon1/temp1_input';
+      };
     };
-  };
+  } catch {};
 };
 
 function readTemp(tempSensorFile) {
-  const valueRead = readFileSync(tempSensorFile);
-  return valueRead/1000;
+  if (tempSensorFile) {
+    const valueRead = readFileSync(tempSensorFile);
+    return valueRead/1000;
+  }
+  return 0;
 };
 
 function readGpio(pin, callback) {
@@ -42,11 +52,16 @@ const SocketHandler = (req, res) => {
     const io = new Server(res.socket.server, { path: '/api/socket.io'});
     res.socket.server.io = io;
 
+    const mqttClient = mqtt.connect(MQTT_SERVER, {});
+
     setInterval(() => {
       const temp = readTemp(tempSensorFile);
       readGpio(TOP_LEFT_PIN, (left) => {
         readGpio(TOP_RIGHT_PIN, (right) => {
           io.emit('message', {temp: temp, topLeft: left, topRight: right});
+          mqttClient.publish(TEMP_TOPIC, temp.toString());
+          mqttClient.publish(TOP_LEFT_TOPIC, left.toString());
+          mqttClient.publish(TOP_RIGHT_TOPIC, right.toString());
         });
       });
     } , POLL_INTERVAL);
