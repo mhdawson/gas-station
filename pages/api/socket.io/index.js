@@ -2,10 +2,11 @@ import { Server } from 'socket.io';
 import { readFileSync, readdirSync } from 'node:fs';
 import { exec } from 'node:child_process';
 import mqtt from 'mqtt';
+import path from 'node:path';
 
 const DEVICES_PREFIX = '/sys/bus/w1/devices/';
-const TOP_LEFT_PIN = 17;
-const TOP_RIGHT_PIN = 27;
+const TOP_LEFT_PIN = 27;
+const TOP_RIGHT_PIN = 17;
 const POLL_INTERVAL = 3000;
 const MQTT_SERVER = 'mqtt:10.1.1.186:1883';
 const TEMP_TOPIC = 'gas_station/temp';
@@ -18,7 +19,12 @@ function getDeviceFile() {
     const entries = readdirSync(DEVICES_PREFIX);
     for (let i = 0; i < entries.length; i++) {
       if (entries[i].startsWith('28-')) {
-        return DEVICES_PREFIX + entries[i] + '/hwmon/hwmon1/temp1_input';
+        const hwmonEntries = readdirSync(path.join(DEVICES_PREFIX, entries[i], 'hwmon'));
+        for (let j = 0; j < entries.length; j++) {
+          if (hwmonEntries[i].startsWith('hwmon')) {
+            return path.join(DEVICES_PREFIX, entries[i], '/hwmon', hwmonEntries[j], 'temp1_input');
+          };
+        };
       };
     };
   } catch {};
