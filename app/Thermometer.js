@@ -4,8 +4,8 @@ import React from "react";
 import * as d3 from 'd3';
 import { useD3 } from './useD3';
 
-// from https://github.com/DavidBanksNZ/d3-thermometer MIT
-
+// This code is derived from https://github.com/DavidBanksNZ/d3-thermometer
+// which is under the MIT licence
 function Thermometer(data) {
   const ref = useD3(
     (svg) => {
