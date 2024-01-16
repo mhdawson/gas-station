@@ -9,9 +9,10 @@ const TOP_LEFT_PIN = 27;
 const TOP_RIGHT_PIN = 17;
 const POLL_INTERVAL = 3000;
 const MQTT_SERVER = 'mqtt:10.1.1.186:1883';
-const TEMP_TOPIC = 'gas_station/temp';
-const TOP_LEFT_TOPIC = 'gas_station/top_left';
-const TOP_RIGHT_TOPIC = 'gas_station/top_right';
+const STATION_TOPIC_PATH = process.env.STATION_TOPIC_PATH || 'default';
+const TEMP_TOPIC = `gas_station/${STATION_TOPIC_PATH}/temp`;
+const TOP_LEFT_TOPIC = `gas_station/${STATION_TOPIC_PATH}/top_left`;
+const TOP_RIGHT_TOPIC = `gas_station/${STATION_TOPIC_PATH}/top_right`;
 
 function getDeviceFile() {
   // currently assumes there is a single device
